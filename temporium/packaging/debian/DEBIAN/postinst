@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+# Обновление кэша иконок
+if command -v gtk-update-icon-cache &> /dev/null; then
+    gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
+fi
+
+# Обновление базы данных .desktop файлов
+if command -v update-desktop-database &> /dev/null; then
+    update-desktop-database /usr/share/applications 2>/dev/null || true
+fi
+
+echo ""
+echo "╔══════════════════════════════════════════════════════════════╗"
+echo "║              ⏳ TEMPORIUM установлен успешно! ⏳              ║"
+echo "╚══════════════════════════════════════════════════════════════╝"
+echo ""
+echo "Для запуска:"
+echo "  1. Найдите 'Temporium' в меню приложений"
+echo "  2. Или выполните: temporium"
+echo ""
+echo "При первом запуске будет автоматически запущена база данных PostgreSQL."
+echo ""
+
+exit 0

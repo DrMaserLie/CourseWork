@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+# Остановка Docker контейнера если запущен
+if command -v docker &> /dev/null; then
+    docker stop temporium-db 2>/dev/null || true
+    docker rm temporium-db 2>/dev/null || true
+fi
+
+exit 0

@@ -1,0 +1,5 @@
+# Hashes of file build rules.
+6d6595dc7e1edbcef31d6b3c7b596afa CMakeFiles/Temporium_autogen
+6d6595dc7e1edbcef31d6b3c7b596afa CMakeFiles/Temporium_autogen_timestamp_deps
+2cec1d2d20d3e5d54a0ce29023bccd80 Temporium_autogen/3YJK5W5UP7/qrc_resources.cpp
+454f6ff3ae01f8dc98d949f083eab1ad Temporium_autogen/timestamp

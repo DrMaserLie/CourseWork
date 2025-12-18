@@ -1,0 +1,20 @@
+{
+	"BUILD_DIR" : "/home/maserlie/CurcedVaya/temporium/build/Temporium_autogen",
+	"CMAKE_BINARY_DIR" : "/home/maserlie/CurcedVaya/temporium/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/maserlie/CurcedVaya/temporium/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/maserlie/CurcedVaya/temporium",
+	"CMAKE_SOURCE_DIR" : "/home/maserlie/CurcedVaya/temporium",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/maserlie/CurcedVaya/temporium/build/Temporium_autogen/include",
+	"INPUTS" : [ "/home/maserlie/CurcedVaya/temporium/resources/temporium.svg" ],
+	"LOCK_FILE" : "/home/maserlie/CurcedVaya/temporium/build/CMakeFiles/Temporium_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "3YJK5W5UP7",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt5/bin/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/maserlie/CurcedVaya/temporium/build/CMakeFiles/Temporium_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Used.txt",
+	"SOURCE" : "/home/maserlie/CurcedVaya/temporium/resources/resources.qrc",
+	"VERBOSITY" : 0
+}

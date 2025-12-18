@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=2.0
+Type=Application
+Name=Temporium
+GenericName=Game Database
+Comment=СУБД Компьютерные Игры - Курсовая работа
+Exec=temporium
+Icon=temporium
+Terminal=false
+Categories=Office;Database;Qt;
+Keywords=games;database;collection;
+StartupNotify=true
+StartupWMClass=temporium

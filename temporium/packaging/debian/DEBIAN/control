@@ -1,0 +1,20 @@
+Package: temporium
+Version: 2.0.0
+Section: database
+Priority: optional
+Architecture: amd64
+Depends: libqt5widgets5, libqt5svg5, libpqxx-7.9 | libpqxx-7.8 | libpqxx-6.4, libpq5, libssl3 | libssl1.1, docker.io | docker-ce
+Maintainer: NSTU Student <student@nstu.ru>
+Homepage: https://github.com/nstu/temporium
+Description: Temporium - Game Database Management System
+ Desktop application for managing a personal collection of computer games.
+ Features include:
+  - User authentication with SHA-256 password hashing
+  - CRUD operations for games
+  - Filtering and sorting
+  - Binary file export/import
+  - PostgreSQL database via Docker
+  - Dark theme UI
+ .
+ Developed as a coursework project for "Programming" discipline
+ at Novosibirsk State Technical University by Tyurikov Maxim Olegovich.
