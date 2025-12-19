@@ -21,15 +21,14 @@ constexpr double MIN_VRAM_REQUIRED = 0.5;
 struct Game {
     int id;
     std::string name;           // Название игры
-    double disk_space;          // Место на диске (ГБ)
-    double ram_usage;           // Потребление ОЗУ (ГБ)
-    double vram_required;       // Требуемая видеопамять (ГБ)
+    unsigned int disk_space;          // Место на диске (ГБ)
+    unsigned int ram_usage;           // Потребление ОЗУ (ГБ)
+    unsigned int  vram_required;       // Требуемая видеопамять (ГБ)
     std::string genre;          // Жанр игры
     bool completed;             // Пройдено (да/нет)
     std::string url;            // Ссылка на игру (Steam, GOG и т.д.)
     int user_id;                // ID пользователя-владельца
     
-    // Новые поля
     int rating;                 // Оценка: -1 = отсутствует, 0-10 = оценка
     bool is_favorite;           // Избранное
     bool is_installed;          // Установлено
@@ -76,7 +75,6 @@ struct GameFilter {
     bool filter_vram_max;
     double vram_max;
     
-    // Новые фильтры
     bool filter_tag;
     std::string tag_value;
     
@@ -92,7 +90,7 @@ struct GameFilter {
     bool filter_rating_max;
     int rating_max;
     
-    bool filter_has_rating;      // Фильтр: только с оценкой / без оценки
+    bool filter_has_rating;    
     bool has_rating_value;
     
     GameFilter() : 
@@ -161,15 +159,15 @@ struct BinaryGameRecord {
     double vram_required;
     char genre[64];
     uint8_t completed;
-    char url[512];              // URL ссылка
+    char url[512];           
     int32_t user_id;
     
     // Новые поля
-    int32_t rating;             // -1 = отсутствует, 0-10 = оценка
-    uint8_t is_favorite;        // Избранное
-    uint8_t is_installed;       // Установлено
-    char notes[1024];           // Заметки
-    char tags[256];             // Теги
+    int32_t rating;            
+    uint8_t is_favorite;        
+    uint8_t is_installed;       
+    char notes[1024];          
+    char tags[256];            
     
     BinaryGameRecord() : id(0), disk_space(0), ram_usage(0), 
                          vram_required(0), completed(0), user_id(0),
@@ -183,7 +181,6 @@ struct BinaryGameRecord {
 };
 #pragma pack(pop)
 
-// Список доступных жанров
 const std::vector<std::string> GENRES = {
     "Action",
     "Adventure", 
@@ -202,6 +199,5 @@ const std::vector<std::string> GENRES = {
     "Other"
 };
 
-} // namespace Temporium
-
-#endif // TYPES_H
+} 
+#endif 

@@ -37,7 +37,7 @@ public:
         if (data != nullptr && length > 0) {
             SHA256_Update(&sha256, data, length);
         }
-        // Для пустых данных просто завершаем хеш без добавления данных
+       
         
         SHA256_Final(hash, &sha256);
         
@@ -54,6 +54,6 @@ public:
     }
 };
 
-} // namespace Temporium
+} 
 
-#endif // HASH_UTILS_H
+#endif 

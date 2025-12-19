@@ -141,7 +141,8 @@ private:
     QCheckBox* filterInstalledCheck_;
     QComboBox* filterInstalledCombo_;
     QCheckBox* filterRatingCheck_;
-    QComboBox* filterRatingCombo_;  // Есть оценка / Нет оценки / Любая
+    QComboBox* filterRatingModeCombo_;  
+    QSpinBox* filterRatingSpin_;       
     
     QPushButton* applyFilterButton_;
     QPushButton* resetFilterButton_;
@@ -154,14 +155,14 @@ private:
     QTextEdit* notesPanelEdit_;
     QLabel* notesPanelTitle_;
     QPushButton* saveNotesButton_;
-    int currentNotesGameId_;  // ID игры, для которой открыты заметки
+    int currentNotesGameId_; 
     
     // Кнопки управления
     QPushButton* addButton_;
     QPushButton* editButton_;
     QPushButton* deleteButton_;
     QPushButton* refreshButton_;
-    QPushButton* notesButton_;  // Кнопка для раскрытия заметок
+    QPushButton* notesButton_;  
     
     // Действия меню
     QAction* loginAction_;
@@ -208,12 +209,12 @@ private:
     QCheckBox* completedCheck_;
     QLineEdit* urlEdit_;
     
-    // Новые поля
-    QComboBox* ratingCombo_;         // Оценка: "Нет" или 0-10
-    QCheckBox* favoriteCheck_;       // Избранное
-    QCheckBox* installedCheck_;      // Установлено
-    QLineEdit* tagsEdit_;            // Теги через запятую
-    QTextEdit* notesEdit_;           // Заметки
+   
+    QComboBox* ratingCombo_;      
+    QCheckBox* favoriteCheck_;       
+    QCheckBox* installedCheck_;
+    QLineEdit* tagsEdit_;
+    QTextEdit* notesEdit_;
     
     int gameId_;
     int userId_;
@@ -239,7 +240,6 @@ class AdminPanelDialog : public QDialog {
 public:
     explicit AdminPanelDialog(DatabaseManager* dbManager, int adminUserId, QWidget* parent = nullptr);
     
-    // Возвращает новый логин, если он был изменен
     QString getNewUsername() const { return newUsername_; }
 
 private slots:
@@ -263,6 +263,5 @@ private:
     QString newUsername_;
 };
 
-} // namespace Temporium
-
-#endif // MAINWINDOW_H
+} 
+#endif 

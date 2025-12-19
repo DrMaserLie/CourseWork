@@ -26,7 +26,7 @@ struct GameStats {
     int completed_count = 0;
     int no_rating_count = 0;
     int installed_count = 0;
-    double installed_disk_space = 0.0;  // ГБ
+    double installed_disk_space = 0.0;  
     int no_url_count = 0;
 };
 
@@ -59,7 +59,7 @@ public:
     int getUserGamesCount(int user_id);
     bool changeUsername(int user_id, const std::string& new_username, const std::string& current_password);
     bool changePassword(int user_id, const std::string& new_password_hash);
-    bool resetAdminCredentials();  // Сброс админа к admin/admin123
+    bool resetAdminCredentials(); 
     
     // CRUD операции с играми
     bool addGame(const Game& game);
@@ -116,6 +116,6 @@ private:
     void ensureAdminExists();
 };
 
-} // namespace Temporium
+} 
 
-#endif // DATABASE_MANAGER_H
+#endif

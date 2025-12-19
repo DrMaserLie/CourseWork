@@ -6,7 +6,6 @@
 #include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
-    // Подавление некритичных предупреждений Wayland
     QLoggingCategory::setFilterRules(
         "qt.qpa.wayland.warning=false\n"
         "qt.qpa.wayland=false"
@@ -14,17 +13,17 @@ int main(int argc, char *argv[]) {
     
     QApplication app(argc, argv);
     
-    // Устанавливаем стиль Fusion для консистентного вида
     app.setStyle(QStyleFactory::create("Fusion"));
     
-    // Устанавливаем иконку приложения
-    QIcon appIcon(":/icons/app");
-    app.setWindowIcon(appIcon);
-    
     QApplication::setApplicationName("Temporium");
-    QApplication::setApplicationVersion("2.0");
+    QApplication::setApplicationVersion("4.1.0");
     QApplication::setOrganizationName("NSTU");
     QApplication::setOrganizationDomain("nstu.ru");
+    
+    QApplication::setDesktopFileName("temporium");
+    
+    QIcon appIcon(":/icons/app");
+    app.setWindowIcon(appIcon);
     
     try {
         Temporium::MainWindow mainWindow;

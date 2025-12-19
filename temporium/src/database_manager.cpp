@@ -375,7 +375,6 @@ bool DatabaseManager::resetAdminCredentials() {
     try {
         pqxx::work txn(*conn_);
         
-        // Сбрасываем админа к дефолтным значениям: admin / admin123
         std::string adminHash = HashUtils::hashPassword("admin123", "admin");
         
         txn.exec_params(
@@ -544,9 +543,7 @@ std::string DatabaseManager::buildFilterCondition(const GameFilter& filter, int 
         ss << " AND vram_required <= " << filter.vram_max;
     }
     
-    // Новые фильтры
     if (filter.filter_tag && !filter.tag_value.empty()) {
-        // Ищем тег в списке тегов (через LIKE с разделителями)
         ss << " AND (tags LIKE '%" << conn_->esc(filter.tag_value) << "%')";
     }
     
@@ -568,9 +565,9 @@ std::string DatabaseManager::buildFilterCondition(const GameFilter& filter, int 
     
     if (filter.filter_has_rating) {
         if (filter.has_rating_value) {
-            ss << " AND rating >= 0";  // Только с оценкой
+            ss << " AND rating >= 0";  
         } else {
-            ss << " AND rating = -1";  // Только без оценки
+            ss << " AND rating = -1";  
         }
     }
     
@@ -957,7 +954,6 @@ std::vector<std::string> DatabaseManager::getUserTags(int user_id) {
             std::stringstream ss(tagStr);
             std::string tag;
             while (std::getline(ss, tag, ',')) {
-                // Trim whitespace
                 size_t start = tag.find_first_not_of(" \t");
                 size_t end = tag.find_last_not_of(" \t");
                 if (start != std::string::npos && end != std::string::npos) {

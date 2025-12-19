@@ -66,9 +66,9 @@ include CMakeFiles/Temporium_autogen_timestamp_deps.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/Temporium_autogen_timestamp_deps.dir/progress.make
 
+CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
 CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13
 CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Svg.so.5.15.13
-CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
 CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 CMakeFiles/Temporium_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libcrypto.so
 

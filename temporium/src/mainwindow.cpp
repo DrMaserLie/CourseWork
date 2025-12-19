@@ -20,7 +20,6 @@ const QString TEXT_COLOR = "#ffffff";
 const QString TEXT_SECONDARY = "#b0b0b0";
 const QString TEXT_PRIMARY  = "#ffffff";
 const QString BORDER_COLOR  = "#444444";
-// Вспомогательная функция для настройки QDoubleSpinBox
 static void setupSpinBox(QDoubleSpinBox* spinBox, double min, double max, double defaultVal = 0) {
     spinBox->setDecimals(1);
     spinBox->setRange(-99999, 99999);
@@ -590,12 +589,17 @@ void MainWindow::setupMainPage() {
     // Фильтр по оценке
     QHBoxLayout* ratingLayout = new QHBoxLayout();
     filterRatingCheck_ = new QCheckBox("Оценка:");
-    filterRatingCombo_ = new QComboBox();
-    filterRatingCombo_->addItem("С оценкой", 1);
-    filterRatingCombo_->addItem("Без оценки", 0);
-    filterRatingCombo_->setEnabled(false);
+    filterRatingModeCombo_ = new QComboBox();
+    filterRatingModeCombo_->addItem("не меньше", 0);
+    filterRatingModeCombo_->addItem("не больше", 1);
+    filterRatingModeCombo_->setEnabled(false);
+    filterRatingSpin_ = new QSpinBox();
+    filterRatingSpin_->setRange(0, 10);
+    filterRatingSpin_->setValue(5);
+    filterRatingSpin_->setEnabled(false);
     ratingLayout->addWidget(filterRatingCheck_);
-    ratingLayout->addWidget(filterRatingCombo_, 1);
+    ratingLayout->addWidget(filterRatingModeCombo_);
+    ratingLayout->addWidget(filterRatingSpin_);
     filterLayout->addLayout(ratingLayout);
     
     QHBoxLayout* filterButtonLayout = new QHBoxLayout();
@@ -796,7 +800,8 @@ void MainWindow::setupConnections() {
     connect(filterTagCheck_, &QCheckBox::toggled, filterTagCombo_, &QComboBox::setEnabled);
     connect(filterFavoriteCheck_, &QCheckBox::toggled, filterFavoriteCombo_, &QComboBox::setEnabled);
     connect(filterInstalledCheck_, &QCheckBox::toggled, filterInstalledCombo_, &QComboBox::setEnabled);
-    connect(filterRatingCheck_, &QCheckBox::toggled, filterRatingCombo_, &QComboBox::setEnabled);
+    connect(filterRatingCheck_, &QCheckBox::toggled, filterRatingModeCombo_, &QComboBox::setEnabled);
+    connect(filterRatingCheck_, &QCheckBox::toggled, filterRatingSpin_, &QSpinBox::setEnabled);
     
     connect(loginButton_, &QPushButton::clicked, this, &MainWindow::onLogin);
     connect(registerButton_, &QPushButton::clicked, this, &MainWindow::onRegister);
@@ -832,7 +837,7 @@ void MainWindow::setupConnections() {
 }
 
 void MainWindow::onTableCellClicked(int row, int column) {
-    // Если клик на колонке "Ссылка" (индекс 11) - открыть URL
+    // Если клик на колонке "Ссылка" (тк индекс 11) - открыть URL
     if (column == 11) {
         QTableWidgetItem* item = gamesTable_->item(row, 11);
         if (item) {
@@ -1234,8 +1239,17 @@ void MainWindow::onApplyFilter() {
     }
     
     if (filterRatingCheck_->isChecked()) {
-        currentFilter_.filter_has_rating = true;
-        currentFilter_.has_rating_value = filterRatingCombo_->currentData().toInt() == 1;
+        int ratingValue = filterRatingSpin_->value();
+        int mode = filterRatingModeCombo_->currentData().toInt();
+        if (mode == 0) {
+            // "не меньше" - filter_rating_min
+            currentFilter_.filter_rating_min = true;
+            currentFilter_.rating_min = ratingValue;
+        } else {
+            // "не больше" - filter_rating_max
+            currentFilter_.filter_rating_max = true;
+            currentFilter_.rating_max = ratingValue;
+        }
     }
     
     filterActive_ = true;
@@ -1260,6 +1274,8 @@ void MainWindow::onResetFilter() {
     filterInstalledCheck_->setChecked(false);
     filterRatingCheck_->setChecked(false);
     filterTagCombo_->setCurrentIndex(0);
+    filterRatingModeCombo_->setCurrentIndex(0);
+    filterRatingSpin_->setValue(5);
     
     currentFilter_.reset();
     filterActive_ = false;
@@ -1406,11 +1422,12 @@ void MainWindow::onAbout() {
     aboutBox.setText(QString(
         "<h2 style='color: %1;'>⏳ Temporium</h2>"
         "<p>СУБД Компьютерные Игры</p>"
-        "<p>Версия 2.0</p>"
+        "<p>Версия 4.1.0</p>"
         "<hr>"
         "<p>Курсовая работа по дисциплине «Программирование»</p>"
         "<p>ФГБОУ ВО «Новосибирский государственный технический университет»</p>"
         "<p>Кафедра «Защита информации»</p>"
+        "<p>Тюриков Максим Олегович</p>"
         "<hr>"
         "<p><b>Возможности:</b></p>"
         "<ul>"
@@ -1435,10 +1452,9 @@ void MainWindow::resetTableColumnWidths() {
     gamesTable_->setColumnWidth(5, 85);   // Жанр
     gamesTable_->setColumnWidth(6, 70);   // Пройдено
     gamesTable_->setColumnWidth(7, 55);   // Оценка
-    gamesTable_->setColumnWidth(8, 30);   // ★ (Избранное)
-    gamesTable_->setColumnWidth(9, 30);   // 📥 (Установлено)
+    gamesTable_->setColumnWidth(8, 30);   // Избранное
+    gamesTable_->setColumnWidth(9, 30);   // Установлено
     gamesTable_->setColumnWidth(10, 100); // Теги
-    // Колонка "Ссылка" растягивается автоматически (setStretchLastSection)
 }
 
 void MainWindow::updateGamesTable() {
@@ -1485,11 +1501,11 @@ void MainWindow::updateGamesTable(const std::vector<Game>& games) {
         QTableWidgetItem* ratingItem = new QTableWidgetItem(ratingStr);
         ratingItem->setTextAlignment(Qt::AlignCenter);
         if (game.rating >= 8) {
-            ratingItem->setForeground(QColor("#4CAF50"));  // Зелёный для высоких
+            ratingItem->setForeground(QColor("#4CAF50"));  
         } else if (game.rating >= 5 && game.rating < 8) {
-            ratingItem->setForeground(QColor("#FFC107"));  // Жёлтый для средних
+            ratingItem->setForeground(QColor("#FFC107"));  
         } else if (game.rating >= 0) {
-            ratingItem->setForeground(QColor("#F44336"));  // Красный для низких
+            ratingItem->setForeground(QColor("#F44336"));  
         }
         gamesTable_->setItem(row, 7, ratingItem);
         
@@ -1497,7 +1513,7 @@ void MainWindow::updateGamesTable(const std::vector<Game>& games) {
         QTableWidgetItem* favItem = new QTableWidgetItem(game.is_favorite ? "★" : "");
         favItem->setTextAlignment(Qt::AlignCenter);
         if (game.is_favorite) {
-            favItem->setForeground(QColor("#FFD700"));  // Золотой
+            favItem->setForeground(QColor("#FFD700"));  
             QFont favFont = favItem->font();
             favFont.setPointSize(14);
             favItem->setFont(favFont);
@@ -1508,7 +1524,7 @@ void MainWindow::updateGamesTable(const std::vector<Game>& games) {
         QTableWidgetItem* installedItem = new QTableWidgetItem(game.is_installed ? "📥" : "");
         installedItem->setTextAlignment(Qt::AlignCenter);
         if (game.is_installed) {
-            installedItem->setForeground(QColor("#2196F3"));  // Синий
+            installedItem->setForeground(QColor("#2196F3"));  
             QFont instFont = installedItem->font();
             instFont.setPointSize(12);
             installedItem->setFont(instFont);
@@ -1536,7 +1552,6 @@ void MainWindow::updateGamesTable(const std::vector<Game>& games) {
         // Сохраняем ID игры для редактирования заметок
         gamesTable_->item(row, 0)->setData(Qt::UserRole + 1, QString::fromStdString(game.notes));
         
-        // Полупрозрачный тёмно-зеленый для пройденных игр
         if (game.completed) {
             QColor completedColor(30, 60, 30, 180);
             for (int col = 0; col < gamesTable_->columnCount(); ++col) {
@@ -1547,7 +1562,6 @@ void MainWindow::updateGamesTable(const std::vector<Game>& games) {
             }
         }
         
-        // Золотистый фон для избранного (если не пройдено)
         if (game.is_favorite && !game.completed) {
             QColor favoriteColor(60, 50, 20, 150);
             for (int col = 0; col < gamesTable_->columnCount(); ++col) {
@@ -1604,7 +1618,6 @@ void MainWindow::updateTagsCombo() {
     }
 }
 
-// ================= GameEditDialog =================
 
 GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     : QDialog(parent, Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint)
@@ -1618,7 +1631,6 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     
-    // Основная форма
     QFormLayout* layout = new QFormLayout();
     layout->setSpacing(10);
     
@@ -1668,7 +1680,6 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     urlEdit_ = new QLineEdit();
     urlEdit_->setPlaceholderText("https://store.steampowered.com/app/...");
     
-    // Новые поля
     ratingCombo_ = new QComboBox();
     ratingCombo_->addItem("Нет оценки", -1);
     for (int i = 0; i <= 10; ++i) {
@@ -1702,7 +1713,6 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     
     mainLayout->addLayout(layout);
     
-    // Заметки (раскрывающаяся секция)
     QGroupBox* notesGroup = new QGroupBox("📝 Заметки");
     notesGroup->setCheckable(true);
     notesGroup->setChecked(false);
@@ -1714,13 +1724,11 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     notesEdit_->setMaximumHeight(150);
     notesLayout->addWidget(notesEdit_);
     
-    // Скрываем содержимое заметок когда группа свёрнута
     connect(notesGroup, &QGroupBox::toggled, notesEdit_, &QTextEdit::setVisible);
     notesEdit_->setVisible(false);
     
     mainLayout->addWidget(notesGroup);
     
-    // Кнопки
     QDialogButtonBox* buttons = new QDialogButtonBox(
         QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttons, &QDialogButtonBox::accepted, this, [this]() {
@@ -1738,7 +1746,6 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
     mainLayout->addWidget(buttons);
     
-    // Заполняем данные если редактируем
     if (game) {
         gameId_ = game->id;
         userId_ = game->user_id;
@@ -1755,7 +1762,6 @@ GameEditDialog::GameEditDialog(QWidget* parent, const Game* game)
         completedCheck_->setChecked(game->completed);
         urlEdit_->setText(QString::fromStdString(game->url));
         
-        // Новые поля
         int ratingIndex = ratingCombo_->findData(game->rating);
         if (ratingIndex >= 0) {
             ratingCombo_->setCurrentIndex(ratingIndex);
@@ -1785,7 +1791,6 @@ Game GameEditDialog::getGame() const {
     game.url = urlEdit_->text().trimmed().toStdString();
     game.user_id = userId_;
     
-    // Новые поля
     game.rating = ratingCombo_->currentData().toInt();
     game.is_favorite = favoriteCheck_->isChecked();
     game.is_installed = installedCheck_->isChecked();
@@ -1795,7 +1800,6 @@ Game GameEditDialog::getGame() const {
     return game;
 }
 
-// ================= BinaryFileViewDialog =================
 
 BinaryFileViewDialog::BinaryFileViewDialog(const std::vector<Game>& games, 
                                            const QString& filename,
@@ -1843,7 +1847,6 @@ BinaryFileViewDialog::BinaryFileViewDialog(const std::vector<Game>& games,
     layout->addWidget(closeButton);
 }
 
-// ================= AdminPanelDialog =================
 
 AdminPanelDialog::AdminPanelDialog(DatabaseManager* dbManager, int adminUserId, QWidget* parent)
     : QDialog(parent, Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint)
@@ -1864,7 +1867,6 @@ AdminPanelDialog::AdminPanelDialog(DatabaseManager* dbManager, int adminUserId, 
     titleLabel->setStyleSheet(QString("color: %1;").arg(ACCENT_COLOR));
     layout->addWidget(titleLabel);
     
-    // Секция настроек админа
     QGroupBox* adminSettingsBox = new QGroupBox("Настройки администратора");
     QHBoxLayout* adminLayout = new QHBoxLayout(adminSettingsBox);
     
@@ -1880,7 +1882,6 @@ AdminPanelDialog::AdminPanelDialog(DatabaseManager* dbManager, int adminUserId, 
     
     layout->addWidget(adminSettingsBox);
     
-    // Таблица пользователей
     QLabel* usersLabel = new QLabel("Зарегистрированные пользователи:");
     layout->addWidget(usersLabel);
     
@@ -1991,7 +1992,6 @@ void AdminPanelDialog::onRefresh() {
 }
 
 void AdminPanelDialog::onChangeUsername() {
-    // Диалог для смены логина с паролем
     QDialog dialog(this);
     dialog.setWindowTitle("Изменение логина");
     dialog.setWindowFlags(dialog.windowFlags() | Qt::WindowStaysOnTopHint);
@@ -2033,7 +2033,6 @@ void AdminPanelDialog::onChangeUsername() {
         return;
     }
     
-    // Получаем текущий логин админа для проверки пароля
     std::vector<User> users = dbManager_->getAllUsers();
     QString adminUsername;
     for (const auto& user : users) {
@@ -2043,7 +2042,6 @@ void AdminPanelDialog::onChangeUsername() {
         }
     }
     
-    // Проверяем пароль
     std::string currentHash = HashUtils::hashPassword(password.toStdString(), adminUsername.toStdString());
     User verifyUser = dbManager_->authenticateUser(adminUsername.toStdString(), currentHash);
     
@@ -2064,7 +2062,6 @@ void AdminPanelDialog::onChangeUsername() {
 }
 
 void AdminPanelDialog::onChangePassword() {
-    // Диалог для смены пароля
     QDialog passwordDialog(this);
     passwordDialog.setWindowTitle("Изменение пароля");
     passwordDialog.setWindowFlags(passwordDialog.windowFlags() | Qt::WindowStaysOnTopHint);
@@ -2118,7 +2115,6 @@ void AdminPanelDialog::onChangePassword() {
         return;
     }
     
-    // Получаем текущий логин админа для проверки пароля
     std::vector<User> users = dbManager_->getAllUsers();
     QString adminUsername;
     for (const auto& user : users) {
@@ -2128,7 +2124,6 @@ void AdminPanelDialog::onChangePassword() {
         }
     }
     
-    // Проверяем текущий пароль
     std::string currentHash = HashUtils::hashPassword(currentPassword.toStdString(), adminUsername.toStdString());
     User verifyUser = dbManager_->authenticateUser(adminUsername.toStdString(), currentHash);
     
@@ -2137,7 +2132,6 @@ void AdminPanelDialog::onChangePassword() {
         return;
     }
     
-    // Меняем пароль
     std::string newHash = HashUtils::hashPassword(newPassword.toStdString(), adminUsername.toStdString());
     
     if (dbManager_->changePassword(adminUserId_, newHash)) {
@@ -2174,4 +2168,4 @@ void AdminPanelDialog::onResetAdmin() {
     }
 }
 
-} // namespace Temporium
+}
